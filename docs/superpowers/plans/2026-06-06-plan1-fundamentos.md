@@ -92,7 +92,7 @@ const POKEMONS = [
 ];
 ```
 
-- [ ] **Paso 2: Crear `data/equipaciones.js`**
+- [x] **Paso 2: Crear `data/equipaciones.js`**
 
 ```js
 // Editables manualmente. No repetir el mismo id entre los dos equipos.
@@ -108,7 +108,7 @@ const EQUIPACIONES = [
 ];
 ```
 
-- [ ] **Paso 3: Crear `data/field.js`**
+- [x] **Paso 3: Crear `data/field.js`**
 
 ```js
 // Editables manualmente. Todas las dimensiones en unidades de juego.
@@ -123,14 +123,14 @@ const FIELD_CONFIG = {
 };
 ```
 
-- [ ] **Paso 4: Crear `assets/audio/.gitkeep`**
+- [x] **Paso 4: Crear `assets/audio/.gitkeep`**
 
 Crea el fichero vacío para mantener la carpeta en git:
 ```bash
 touch assets/audio/.gitkeep
 ```
 
-- [ ] **Paso 5: Commit**
+- [x] **Paso 5: Commit**
 
 ```bash
 git add data/ assets/
@@ -144,7 +144,7 @@ git commit -m "feat: add editable data files and audio folder structure"
 **Ficheros:**
 - Crear: `js/config.js`
 
-- [ ] **Paso 1: Crear `js/config.js`**
+- [x] **Paso 1: Crear `js/config.js`**
 
 ```js
 // Constantes globales del juego. Los controles son configurables aquí.
@@ -191,7 +191,7 @@ const CONFIG = {
 };
 ```
 
-- [ ] **Paso 2: Commit**
+- [x] **Paso 2: Commit**
 
 ```bash
 git add js/config.js
@@ -207,7 +207,7 @@ git commit -m "feat: add global config with controls and game constants"
 
 Esta escena es provisional. Su único propósito es verificar que Phaser carga correctamente y que el campo se dibuja con las dimensiones correctas. Se reemplazará en el Plan 2.
 
-- [ ] **Paso 1: Crear `js/scenes/FieldTestScene.js`**
+- [x] **Paso 1: Crear `js/scenes/FieldTestScene.js`**
 
 ```js
 class FieldTestScene extends Phaser.Scene {
@@ -280,7 +280,7 @@ class FieldTestScene extends Phaser.Scene {
 }
 ```
 
-- [ ] **Paso 2: Commit**
+- [x] **Paso 2: Commit**
 
 ```bash
 git add js/scenes/FieldTestScene.js
@@ -339,7 +339,7 @@ git commit -m "feat: add FieldTestScene to verify field rendering"
 </html>
 ```
 
-- [ ] **Paso 2: Abrir en el navegador y verificar**
+- [x] **Paso 2: Abrir en el navegador y verificar**
 
 Abre `index.html` directamente (doble clic o `file://`). Debes ver:
 - Fondo negro con campo verde centrado

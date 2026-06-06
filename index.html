@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>FPP — Fútbol para Pokémons</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #111; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- Datos editables (deben cargarse antes que el juego) -->
+  <script src="data/field.js"></script>
+  <script src="data/pokemons.js"></script>
+  <script src="data/equipaciones.js"></script>
+
+  <!-- Configuración global -->
+  <script src="js/config.js"></script>
+
+  <!-- Escenas -->
+  <script src="js/scenes/FieldTestScene.js"></script>
+
+  <!-- Phaser -->
+  <script src="lib/phaser.min.js"></script>
+
+  <!-- Arranque -->
+  <script>
+    const game = new Phaser.Game({
+      type: Phaser.AUTO,
+      width:  FIELD_CONFIG.largo * FIELD_CONFIG.escala,
+      height: FIELD_CONFIG.ancho * FIELD_CONFIG.escala,
+      backgroundColor: '#111111',
+      scene: [FieldTestScene]
+    });
+  </script>
+
+</body>
+</html>
