@@ -40,3 +40,12 @@ const CONFIG = {
   porteroRetrasoMin: 300,
   porteroRetrasoMax: 800
 };
+// Estado compartido entre escenas — se rellena durante los menús
+const GameState = {
+  modo: null,
+  tipo: null,
+  duracionParte: null,
+  equipoLocal:     { pokemons: [], equipacion: null, goleadores: [] },
+  equipoVisitante: { pokemons: [], equipacion: null, goleadores: [] },
+  marcador: { local: 0, visitante: 0 }
+};

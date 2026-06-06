@@ -11,7 +11,7 @@
 </head>
 <body>
 
-  <!-- Datos editables (deben cargarse antes que el juego) -->
+  <!-- Datos editables -->
   <script src="data/field.js"></script>
   <script src="data/pokemons.js"></script>
   <script src="data/equipaciones.js"></script>
@@ -22,8 +22,17 @@
   <!-- Phaser -->
   <script src="lib/phaser.min.js"></script>
 
+  <!-- Entidades -->
+  <script src="js/entities/Ball.js"></script>
+  <script src="js/entities/Player.js"></script>
+  <script src="js/entities/Goalkeeper.js"></script>
+
   <!-- Escenas -->
-  <script src="js/scenes/FieldTestScene.js"></script>
+  <script src="js/scenes/BootScene.js"></script>
+  <script src="js/scenes/MenuScene.js"></script>
+  <script src="js/scenes/SelectScene.js"></script>
+  <script src="js/scenes/PlaceholderGameScene.js"></script>
+  <script src="js/scenes/SummaryScene.js"></script>
 
   <!-- Arranque -->
   <script>
@@ -32,7 +41,7 @@
       width:  FIELD_CONFIG.largo * FIELD_CONFIG.escala,
       height: FIELD_CONFIG.ancho * FIELD_CONFIG.escala,
       backgroundColor: '#111111',
-      scene: [FieldTestScene]
+      scene: [BootScene, MenuScene, SelectScene, PlaceholderGameScene, SummaryScene]
     });
   </script>
 
