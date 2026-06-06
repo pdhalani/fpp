@@ -1,6 +1,7 @@
 # ROADMAP — Mejoras futuras
 
 ## Gráficos
+- [ ] Balón: dibujar Pokeball vectorial (mitad roja/mitad blanca, línea central, punto negro) en lugar de círculo blanco
 - [ ] Evolucionar de círculos coloreados a sprites reales de Pokémon
 - [ ] Perspectiva isométrica (opcional, alternativa a cenital)
 
