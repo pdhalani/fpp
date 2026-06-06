@@ -184,7 +184,8 @@ class SelectScene extends Phaser.Scene {
       this.scene.start('SelectScene', { equipo: 'visitante' });
     } else {
       GameState.equipoVisitante = datos;
-      this.scene.start('PlaceholderGameScene');
+      const siguiente = GameState.tipo === 'penalties' ? 'PenaltyScene' : 'GameScene';
+      this.scene.start(siguiente);
     }
   }
 }

@@ -31,7 +31,8 @@
   <script src="js/scenes/BootScene.js"></script>
   <script src="js/scenes/MenuScene.js"></script>
   <script src="js/scenes/SelectScene.js"></script>
-  <script src="js/scenes/PlaceholderGameScene.js"></script>
+  <script src="js/scenes/GameScene.js"></script>
+  <script src="js/scenes/PenaltyScene.js"></script>
   <script src="js/scenes/SummaryScene.js"></script>
 
   <!-- Arranque -->
@@ -41,7 +42,7 @@
       width:  FIELD_CONFIG.largo * FIELD_CONFIG.escala,
       height: FIELD_CONFIG.ancho * FIELD_CONFIG.escala,
       backgroundColor: '#111111',
-      scene: [BootScene, MenuScene, SelectScene, PlaceholderGameScene, SummaryScene]
+      scene: [BootScene, MenuScene, SelectScene, GameScene, PenaltyScene, SummaryScene]
     });
   </script>
 
