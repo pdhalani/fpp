@@ -67,7 +67,8 @@ fpp/
 | Portería | 4.5 ancho × 2 alto, centrada en cada fondo |
 | Área | 15 ancho × 10 largo desde cada fondo |
 | Punto de penalty | Centrado, a 7 unidades de cada portería |
-| Bandas | El balón rebota, no hay fuera de banda |
+| Bandas (arriba/abajo) | El balón rebota, jugadores no pueden salir del campo |
+| Fondos (izquierda/derecha) | El balón rebota (no hay fuera de fondo en v1), jugadores no pueden salir |
 | Perspectiva | Cenital (top-down) |
 | Representación | Gráficos vectoriales Phaser (sin imágenes de campo) |
 

@@ -22,3 +22,5 @@
 
 ## Juego
 - [ ] Prórroga en partido normal si hay empate al final del tiempo reglamentario
+- [ ] Fuera de fondo: saque de esquina (último toque del atacante) y saque de puerta (último toque del defensor)
+- [ ] Faltas: detección de tackle ilegal y tiro libre
