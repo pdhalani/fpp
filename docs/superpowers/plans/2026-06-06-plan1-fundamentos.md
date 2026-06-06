@@ -30,7 +30,7 @@
 **Ficheros:**
 - Crear: `lib/phaser.min.js`
 
-- [ ] **Paso 1: Descargar Phaser 3**
+- [x] **Paso 1: Descargar Phaser 3**
 
 ```bash
 curl -L "https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js" -o lib/phaser.min.js
@@ -44,7 +44,7 @@ head -c 100 lib/phaser.min.js
 # Esperado: primera línea del código minificado de Phaser
 ```
 
-- [ ] **Paso 2: Commit**
+- [x] **Paso 2: Commit**
 
 ```bash
 git add lib/phaser.min.js

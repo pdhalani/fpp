@@ -93,21 +93,16 @@ Agrupados y filtrados por tipo en la pantalla de selección. Campos `velocidad`,
 ```js
 const EQUIPACIONES = [
   {
-    id: "furia",
-    nombre: "Furia",
-    color_jugadores: "#E53935",
-    color_portero:   "#B71C1C"
-  },
-  {
-    id: "arena",
-    nombre: "Arena",
-    color_jugadores: "#FFB300",
-    color_portero:   "#E65100"
+    id: "001",
+    nombre: "Cohetes veloces",
+    color_jugadores: "#40E0D0",
+    color_portero:   "#008B8B",
+    icono: "🚀"
   },
   // más packs...
 ];
 ```
-Cada pack tiene color para jugadores de campo y color diferenciado para el portero. No se puede repetir el mismo pack entre los dos equipos.
+Cada pack tiene color para jugadores de campo, color diferenciado para el portero, y un icono (emoji) que se muestra junto al nombre en el HUD del marcador y en la pantalla de resumen. No se puede repetir el mismo pack entre los dos equipos.
 
 ### `data/field.js`
 ```js
