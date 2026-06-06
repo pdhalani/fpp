@@ -24,8 +24,8 @@ class FieldTestScene extends Phaser.Scene {
     g.lineTo(W / 2, H);
     g.strokePath();
 
-    // Círculo central (radio 3 unidades)
-    g.strokeCircle(W / 2, H / 2, 3 * S);
+    // Círculo central (radio 4 unidades)
+    g.strokeCircle(W / 2, H / 2, 4 * S);
 
     // Punto central
     g.fillStyle(0xffffff);
@@ -60,21 +60,21 @@ class FieldTestScene extends Phaser.Scene {
     g.fillCircle(penX, H / 2, 4);
     g.fillCircle(W - penX, H / 2, 4);
 
-    // Medias lunas: arco centrado en el punto de penalty, recortado al exterior del área
-    const lunaR  = FIELD_CONFIG.luna_radio * S;
-    const areaBorde = areaL; // borde exterior del área en px desde cada fondo
+    // Medias lunas: arco centrado en punto de penalty, solo la parte exterior al área
+    const lunaR = FIELD_CONFIG.luna_radio * S;
     g.lineStyle(2, 0xffffff, 1);
 
-    // Izquierda: el punto de penalty está a penX del fondo izquierdo (x=0)
-    // El área llega hasta x=areaBorde. El arco empieza donde el círculo cruza x=areaBorde.
-    const izqAngulo = Math.acos((areaBorde - penX) / lunaR);
+    // Ángulo donde el círculo cruza el borde del área
+    const lunaAngulo = Math.acos((areaL - penX) / lunaR);
+
+    // Izquierda: arco exterior al área (apunta hacia el centro del campo)
     g.beginPath();
-    g.arc(penX, H / 2, lunaR, -izqAngulo, izqAngulo, false);
+    g.arc(penX, H / 2, lunaR, -lunaAngulo, lunaAngulo, false);
     g.strokePath();
 
     // Derecha: simétrico
     g.beginPath();
-    g.arc(W - penX, H / 2, lunaR, Math.PI - izqAngulo, Math.PI + izqAngulo, false);
+    g.arc(W - penX, H / 2, lunaR, Math.PI - lunaAngulo, Math.PI + lunaAngulo, false);
     g.strokePath();
 
     this.add.text(10, 10, 'Campo OK - Plan 1 verificado', {

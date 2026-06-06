@@ -7,6 +7,6 @@ const FIELD_CONFIG = {
   area:          { largo: 11, ancho: 18 },
   area_pequena:  { largo: 5, ancho: 8 },
   penalty_dist:  7,
-  luna_radio:    3,
+  luna_radio:    5,
   escala: 16
 };

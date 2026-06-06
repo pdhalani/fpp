@@ -353,7 +353,7 @@ Si el canvas aparece en blanco o hay errores en la consola del navegador (F12), 
 - Que `lib/phaser.min.js` se descargó correctamente (no está vacío)
 - Que el orden de los `<script>` es el correcto (`data/` antes que `js/`)
 
-- [ ] **Paso 3: Commit final**
+- [x] **Paso 3: Commit final**
 
 ```bash
 git add index.html
