@@ -60,16 +60,21 @@ class FieldTestScene extends Phaser.Scene {
     g.fillCircle(penX, H / 2, 4);
     g.fillCircle(W - penX, H / 2, 4);
 
-    // Medias lunas (semicírculo exterior al área grande)
-    const lunaR = FIELD_CONFIG.luna_radio * S;
+    // Medias lunas: arco centrado en el punto de penalty, recortado al exterior del área
+    const lunaR  = FIELD_CONFIG.luna_radio * S;
+    const areaBorde = areaL; // borde exterior del área en px desde cada fondo
     g.lineStyle(2, 0xffffff, 1);
-    // Izquierda: semicírculo centrado en punto de penalty, mitad derecha (exterior al área)
+
+    // Izquierda: el punto de penalty está a penX del fondo izquierdo (x=0)
+    // El área llega hasta x=areaBorde. El arco empieza donde el círculo cruza x=areaBorde.
+    const izqAngulo = Math.acos((areaBorde - penX) / lunaR);
     g.beginPath();
-    g.arc(penX, H / 2, lunaR, -Math.PI / 2, Math.PI / 2, false);
+    g.arc(penX, H / 2, lunaR, -izqAngulo, izqAngulo, false);
     g.strokePath();
-    // Derecha: semicírculo centrado en punto de penalty, mitad izquierda (exterior al área)
+
+    // Derecha: simétrico
     g.beginPath();
-    g.arc(W - penX, H / 2, lunaR, Math.PI / 2, -Math.PI / 2, false);
+    g.arc(W - penX, H / 2, lunaR, Math.PI - izqAngulo, Math.PI + izqAngulo, false);
     g.strokePath();
 
     this.add.text(10, 10, 'Campo OK - Plan 1 verificado', {
