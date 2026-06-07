@@ -60,19 +60,21 @@ fpp/
 
 ## 4. Campo de juego
 
-| Parámetro | Valor |
+| Parámetro | Variable |
 |---|---|
-| Dimensiones | 50 × 20 unidades |
-| Escala | 1 unidad = 16px → canvas 800 × 320px |
-| Portería | 4.5 ancho × 2 alto, centrada en cada fondo |
-| Área | 15 ancho × 10 largo desde cada fondo |
-| Punto de penalty | Centrado, a 7 unidades de cada portería |
+| Dimensiones | `FIELD_CONFIG.largo` × `FIELD_CONFIG.ancho` (`data/field.js`) |
+| Escala | `FIELD_CONFIG.escala` px/unidad → canvas calculado en `index.html` |
+| Portería | `FIELD_CONFIG.porteria.ancho` × `FIELD_CONFIG.porteria.alto` |
+| Área grande | `FIELD_CONFIG.area.ancho` × `FIELD_CONFIG.area.largo` |
+| Área pequeña | `FIELD_CONFIG.area_pequena.ancho` × `FIELD_CONFIG.area_pequena.largo` |
+| Punto de penalty | `FIELD_CONFIG.penalty_dist` desde cada portería |
+| Media luna | Radio `FIELD_CONFIG.luna_radio`, arco exterior al área centrado en punto de penalty |
 | Bandas (arriba/abajo) | El balón rebota, jugadores no pueden salir del campo |
 | Fondos (izquierda/derecha) | El balón rebota (no hay fuera de fondo en v1), jugadores no pueden salir |
 | Perspectiva | Cenital (top-down) |
 | Representación | Gráficos vectoriales Phaser (sin imágenes de campo) |
 
-El canvas se centra en la ventana del navegador. Todos los parámetros del campo se definen en `data/field.js`.
+Todos los parámetros del campo se definen en `data/field.js`.
 
 ---
 
@@ -107,10 +109,12 @@ Cada pack tiene color para jugadores de campo, color diferenciado para el porter
 ### `data/field.js`
 ```js
 const FIELD_CONFIG = {
-  largo: 50, ancho: 20,
-  porteria: { ancho: 4.5, alto: 2 },
-  area: { largo: 10, ancho: 15 },
+  largo: 50, ancho: 30,
+  porteria:     { ancho: 4.5, alto: 2 },
+  area:         { largo: 11, ancho: 18 },
+  area_pequena: { largo: 5,  ancho: 8  },
   penalty_dist: 7,
+  luna_radio:   5,
   escala: 16
 };
 ```
@@ -231,10 +235,11 @@ Marcador final, lista de goleadores, botón Volver al menú.
 
 ### Goalkeeper
 - Hereda comportamiento de Player
-- Movimiento restringido al área
-- Sigue lateralmente la posición X del balón
+- Movimiento restringido al área pequeña
+- Posicionamiento: se sitúa al 10% de la línea entre el centro de su portería y el balón
+- Si el balón entra en el área pequeña: corre directamente al balón a velocidad doble y lo recoge automáticamente
 - En penalties: se lanza izquierda/derecha con retraso aleatorio (0.3–0.8s)
-- Representación visual: círculo con color de portero del pack de equipación
+- Representación visual: círculo con `color_portero` del pack de equipación
 
 ### Colisiones
 | Par | Comportamiento |

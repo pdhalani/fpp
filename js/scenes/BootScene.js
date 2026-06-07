@@ -15,7 +15,7 @@ class BootScene extends Phaser.Scene {
       fontSize: '20px', fill: '#ffcc00'
     }).setOrigin(0.5);
 
-    this.add.text(W / 2, H / 2 + 40, 'Un juego de Noah Dhalani', {
+    this.add.text(W / 2, H / 2 + 40, 'Un juego de Noah para Maria', {
       fontSize: '12px', fill: '#888888'
     }).setOrigin(0.5);
 
