@@ -11,6 +11,7 @@ class GameScene extends Phaser.Scene {
     this._tiempoMs    = GameState.duracionParte * 60 * 1000;
     this._pausado     = false;
     this._contando    = false;
+    this._finDeParteEjecutado = false;
 
     GameState.marcador = { local: 0, visitante: 0 };
     GameState.equipoLocal.goleadores     = [];
@@ -38,10 +39,13 @@ class GameScene extends Phaser.Scene {
     g.strokeCircle(W/2, H/2, 3*S);
     g.fillStyle(0xffffff); g.fillCircle(W/2, H/2, 4);
 
-    // Porterías
+    // Porterías — red visible (relleno gris claro) + poste blanco grueso
     const pGateH = FIELD_CONFIG.porteria.ancho * S;
-    const pGateD = FIELD_CONFIG.porteria.alto  * S;
+    const pGateD = FIELD_CONFIG.porteria.alto  * S * 2; // profundidad doble para visibilidad
     const pGateY = (H - pGateH) / 2;
+    g.fillStyle(0x555555, 0.6);
+    g.fillRect(-pGateD, pGateY, pGateD, pGateH);
+    g.fillRect(W,       pGateY, pGateD, pGateH);
     g.lineStyle(3, 0xffffff, 1);
     g.strokeRect(-pGateD, pGateY, pGateD, pGateH);
     g.strokeRect(W,       pGateY, pGateD, pGateH);
@@ -159,8 +163,12 @@ class GameScene extends Phaser.Scene {
     }).setOrigin(0.5).setAlpha(0).setDepth(20);
   }
 
-  _mostrarMensajeCentro(texto, duracion) {
+  _mostrarMensajeCentro(texto) {
+    this.tweens.killTweensOf(this._txtCentro);
     this._txtCentro.setText(texto).setAlpha(1);
+  }
+
+  _ocultarMensajeCentro(duracion) {
     this.time.delayedCall(duracion, () => {
       this.tweens.add({ targets: this._txtCentro, alpha: 0, duration: 300 });
     });
@@ -199,8 +207,10 @@ class GameScene extends Phaser.Scene {
   }
 
   _iniciarParte(primera) {
-    const posL = this._posicionesIniciales('local');
-    const posV = this._posicionesIniciales('visitante');
+    // En la 2ª parte los equipos cambian de lado
+    const invertir = !primera;
+    const posL = this._posicionesIniciales(invertir ? 'visitante' : 'local');
+    const posV = this._posicionesIniciales(invertir ? 'local'     : 'visitante');
 
     this._porteroLocal.x = posL[0].x; this._porteroLocal.y = posL[0].y;
     this._porteroVisitante.x = posV[0].x; this._porteroVisitante.y = posV[0].y;
@@ -216,21 +226,22 @@ class GameScene extends Phaser.Scene {
     this._contando = true;
     this._pausado  = true;
 
-    this._mostrarMensajeCentro('Parte ' + this._parte, 1200);
-
-    let cuenta = 3;
-    this.time.addEvent({
-      delay: 1000, repeat: 4,
-      callback: () => {
-        if (cuenta > 0) {
-          this._mostrarMensajeCentro(String(cuenta), 900);
-          cuenta--;
-        } else {
-          this._pausado  = false;
-          this._contando = false;
-          this._mostrarMensajeCentro('¡Ya!', 700);
-        }
-      }
+    // Secuencia: "Parte N" → 3 → 2 → 1 → ¡Ya!
+    this._mostrarMensajeCentro('Parte ' + this._parte);
+    this.time.delayedCall(1200, () => {
+      this._mostrarMensajeCentro('3');
+      this.time.delayedCall(1000, () => {
+        this._mostrarMensajeCentro('2');
+        this.time.delayedCall(1000, () => {
+          this._mostrarMensajeCentro('1');
+          this.time.delayedCall(1000, () => {
+            this._pausado  = false;
+            this._contando = false;
+            this._mostrarMensajeCentro('¡Ya!');
+            this._ocultarMensajeCentro(700);
+          });
+        });
+      });
     });
   }
 
@@ -326,21 +337,55 @@ class GameScene extends Phaser.Scene {
   _procesarGol(resultado) {
     if (!resultado || !resultado.gol) return;
     // TODO: play('gol')
-    const equipo  = resultado.equipo;
-    GameState.marcador[equipo]++;
+    const equipoMarca  = resultado.equipo;
+    const equipoRecibe = equipoMarca === 'local' ? 'visitante' : 'local';
+    GameState.marcador[equipoMarca]++;
     const portador = this._ball.portador;
     const nombre   = portador && portador._pokemon ? portador._pokemon.nombre : null;
     if (nombre) {
-      const lista = equipo === 'local' ? GameState.equipoLocal.goleadores : GameState.equipoVisitante.goleadores;
+      const lista = equipoMarca === 'local' ? GameState.equipoLocal.goleadores : GameState.equipoVisitante.goleadores;
       lista.push(nombre);
     }
 
-    this._mostrarMensajeCentro('¡GOL!', 2000);
+    this._mostrarMensajeCentro('¡GOL!');
     this._pausado = true;
-    this.time.delayedCall(2500, () => {
-      this._ball.colocar(this._W / 2, this._H / 2);
-      this._pausado = false;
+    this.time.delayedCall(2200, () => {
+      this._recolocarTras(equipoRecibe);
     });
+  }
+
+  _recolocarTras(equipoQueRecibio) {
+    // Recolocar todos a posiciones iniciales (respetando lado actual)
+    const invertir = this._parte === 2;
+    const posL = this._posicionesIniciales(invertir ? 'visitante' : 'local');
+    const posV = this._posicionesIniciales(invertir ? 'local'     : 'visitante');
+
+    this._porteroLocal.x = posL[0].x; this._porteroLocal.y = posL[0].y;
+    this._porteroVisitante.x = posV[0].x; this._porteroVisitante.y = posV[0].y;
+    for (let i = 0; i < 5; i++) {
+      this._jugadoresLocal[i].x = posL[i+1].x;
+      this._jugadoresLocal[i].y = posL[i+1].y;
+      this._jugadoresVisitante[i].x = posV[i+1].x;
+      this._jugadoresVisitante[i].y = posV[i+1].y;
+    }
+
+    // El delantero del equipo que recibió el gol saca desde el centro
+    this._ball.colocar(this._W / 2, this._H / 2);
+    if (equipoQueRecibio === 'local') {
+      this._activoLocal.esActivo = false;
+      this._activoLocal = this._jugadoresLocal[4];
+      this._activoLocal.esActivo = true;
+      this._activoLocal.tomarBalon(this._ball);
+    } else {
+      this._activoVisitante.esActivo = false;
+      this._activoVisitante = this._jugadoresVisitante[4];
+      this._activoVisitante.esActivo = true;
+      this._activoVisitante.tomarBalon(this._ball);
+    }
+
+    this._mostrarMensajeCentro('Saque');
+    this._ocultarMensajeCentro(1000);
+    this.time.delayedCall(600, () => { this._pausado = false; });
   }
 
   _abrirPausa() {
@@ -426,12 +471,17 @@ class GameScene extends Phaser.Scene {
 
     this._actualizarHUD(delta);
 
-    if (this._tiempoMs <= 0) {
+    if (this._tiempoMs <= 0 && !this._finDeParteEjecutado) {
+      this._finDeParteEjecutado = true;
       if (this._parte === 1) {
         this._parte = 2;
         this._pausado = true;
-        this._mostrarMensajeCentro('Descanso', 2000);
-        this.time.delayedCall(3000, () => this._iniciarParte(false));
+        this._mostrarMensajeCentro('Descanso');
+        this._ocultarMensajeCentro(2200);
+        this.time.delayedCall(3000, () => {
+          this._finDeParteEjecutado = false;
+          this._iniciarParte(false);
+        });
       } else {
         this._terminarPartido();
       }

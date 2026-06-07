@@ -25,6 +25,21 @@ class Goalkeeper extends Player {
     const centroY = H / 2;
     const porteriaX = this.equipo === 'local' ? 0 : W;
 
+    // Si tiene el balón, pasa al compañero más cercano tras 3 segundos
+    if (this.tieneBalon) {
+      if (!this._tienesBalonDesde) this._tienesBalonDesde = Date.now();
+      if (Date.now() - this._tienesBalonDesde >= 3000) {
+        this._tienesBalonDesde = null;
+        const companeros = this.scene._jugadoresLocal && this.equipo === 'local'
+          ? this.scene._jugadoresLocal
+          : this.scene._jugadoresVisitante;
+        if (companeros) this.pasar(ball, companeros, this.equipo === 'local' ? 1 : -1, 0);
+      }
+      this._dibujar();
+      return;
+    }
+    this._tienesBalonDesde = null;
+
     // ¿Está el balón dentro del área pequeña?
     const balonEnArea = this.equipo === 'local'
       ? ball.x >= 0 && ball.x <= apL && ball.y >= centroY - apHW && ball.y <= centroY + apHW
@@ -56,9 +71,25 @@ class Goalkeeper extends Player {
       const vel = balonEnArea ? this.velocidad * 2 : this.velocidad;
       this.x += (mx / md) * vel;
       this.y += (my / md) * vel;
-    } else if (balonEnArea && ball.portador === null) {
+    }
+
+    // Tomar balón sólo si está muy cerca y en el área pequeña
+    const distBaon = Phaser.Math.Distance.Between(this.x, this.y, ball.x, ball.y);
+    if (balonEnArea && ball.portador === null && distBaon <= this.radioPixels + ball.radio + 4 && this._cooldownBalon === 0) {
       ball.portador   = this;
       this.tieneBalon = true;
+    }
+
+    // Tackle: quitar balón a rival que esté cerca
+    if (ball.portador && ball.portador !== this) {
+      const rival = ball.portador;
+      const distRival = Phaser.Math.Distance.Between(this.x, this.y, rival.x, rival.y);
+      if (distRival <= this.radioPixels + rival.radioPixels + 4) {
+        rival.tieneBalon = false;
+        ball.portador    = null;
+        ball.vx = 0; ball.vy = 0;
+        this._cooldownBalon = 0;
+      }
     }
 
     this._dibujar();

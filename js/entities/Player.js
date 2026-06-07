@@ -12,6 +12,7 @@ class Player {
     this.equipo     = null; // 'local' | 'visitante'
     this._dx        = 0;
     this._dy        = 0;
+    this._cooldownBalon = 0;
 
     const S = FIELD_CONFIG.escala;
     this.radioPixels = CONFIG.jugadorRadio * S;
@@ -53,6 +54,7 @@ class Player {
   }
 
   tomarBalon(ball) {
+    if (this._cooldownBalon > 0) return;
     this.tieneBalon = true;
     ball.portador   = this;
   }
@@ -60,6 +62,7 @@ class Player {
   chutar(ball, dx, dy, potencia) {
     if (!this.tieneBalon) return;
     this.tieneBalon = false;
+    this._cooldownBalon = 15;
     const impulso = CONFIG.balonImpulsoBase + potencia * (CONFIG.balonImpulsoMax - CONFIG.balonImpulsoBase);
     ball.impulsar(dx, dy, impulso);
     // TODO: play('chute')
@@ -90,6 +93,7 @@ class Player {
 
     if (objetivo) {
       this.tieneBalon = false;
+      this._cooldownBalon = 15;
       ball.impulsar(objetivo.x - this.x, objetivo.y - this.y, CONFIG.balonImpulsoBase);
       // TODO: play('pase')
     }
@@ -124,6 +128,7 @@ class Player {
   }
 
   update() {
+    if (this._cooldownBalon > 0) this._cooldownBalon--;
     this._dibujar();
   }
 

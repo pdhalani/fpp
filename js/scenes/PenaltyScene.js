@@ -36,8 +36,11 @@ class PenaltyScene extends Phaser.Scene {
     g.lineStyle(2, 0xffffff, 1); g.strokeRect(0, 0, W, H);
 
     const pGateH = FIELD_CONFIG.porteria.ancho * S;
-    const pGateD = FIELD_CONFIG.porteria.alto  * S;
+    const pGateD = FIELD_CONFIG.porteria.alto  * S * 2;
     const pGateY = (H - pGateH) / 2;
+    g.fillStyle(0x555555, 0.6);
+    g.fillRect(-pGateD, pGateY, pGateD, pGateH);
+    g.fillRect(W,       pGateY, pGateD, pGateH);
     g.lineStyle(4, 0xffffff, 1);
     g.strokeRect(-pGateD, pGateY, pGateD, pGateH);
     g.strokeRect(W,       pGateY, pGateD, pGateH);
@@ -162,15 +165,16 @@ class PenaltyScene extends Phaser.Scene {
     const g = this._miraGraphics;
     g.clear();
     const ph = FIELD_CONFIG.porteria.ancho * this._S;
+    const pd = FIELD_CONFIG.porteria.alto  * this._S * 2;
     const pyT = (this._H - ph) / 2;
     const pyB = (this._H + ph) / 2;
 
-    // Sombra de portería
-    g.lineStyle(2, 0xffffff, 0.3);
+    // Marco portería objetivo
+    g.lineStyle(2, 0xffffff, 0.5);
     if (apuntaIzq) {
-      g.strokeRect(0, pyT, FIELD_CONFIG.porteria.alto * this._S, ph);
+      g.strokeRect(-pd, pyT, pd, ph);
     } else {
-      g.strokeRect(this._W - FIELD_CONFIG.porteria.alto * this._S, pyT, FIELD_CONFIG.porteria.alto * this._S, ph);
+      g.strokeRect(this._W, pyT, pd, ph);
     }
 
     // Mira
@@ -189,19 +193,18 @@ class PenaltyScene extends Phaser.Scene {
   _dibujarPortero(apuntaIzq) {
     const g = this._porteroGraphics;
     g.clear();
-    const S  = this._S;
-    const eq = apuntaIzq
+    const S   = this._S;
+    const eq  = apuntaIzq
       ? GameState.equipoLocal.equipacion
       : GameState.equipoVisitante.equipacion;
     const hexStr = eq ? eq.color_portero : '#888888';
-    const col = Phaser.Display.Color.HexStringToColor(hexStr).color;
-    const px  = apuntaIzq
-      ? FIELD_CONFIG.porteria.alto * S / 2
-      : this._W - FIELD_CONFIG.porteria.alto * S / 2;
-    const radio = CONFIG.jugadorRadio * S;
+    const col    = Phaser.Display.Color.HexStringToColor(hexStr).color;
+    const radio  = CONFIG.jugadorRadio * S;
+    // Portero en la línea de gol
+    const px = apuntaIzq ? radio : this._W - radio;
     g.fillStyle(col);
     g.fillCircle(px, this._porteroY, radio);
-    g.lineStyle(1, 0x000000, 0.5);
+    g.lineStyle(2, 0xffffff, 0.8);
     g.strokeCircle(px, this._porteroY, radio);
   }
 
