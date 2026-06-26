@@ -1,81 +1,85 @@
+// data/pokemons.js
+// Filtro editable: solo los Pokémons que aparecerán en selección.
+// Los datos completos salen de LISTA_DE_POKEMONS.
+
 const POKEMONS = [
-  // ⚙️ Acero (0100)
-  { id: 0101, nombre: "Ferrodada", tipo: "Acero" },
-  { id: 0102, nombre: "Galar-Mauzi", tipo: "Acero" },
-  { id: 0103, nombre: "Melmetal", tipo: "Acero" },
+  // 🔩 Acero
+  { id: 990 }, // Iron Treads / Ferrodada
+  { id: 52, form: "Galarian Meowth" },
+  { id: 809 }, // Melmetal
 
-  // 💧 Agua (0200)
-  { id: 0201, nombre: "Gyarados", tipo: "Agua" },
-  { id: 0202, nombre: "Lapras", tipo: "Agua" },
-  { id: 0203, nombre: "Squirtle", tipo: "Agua" },
+  // 💧 Agua
+  { id: 130 }, // Gyarados
+  { id: 131 }, // Lapras
+  { id: 7 },   // Squirtle
 
-  // 🐛 Bicho (0300)
-  { id: 0301, nombre: "Honweisel", tipo: "Bicho" },
-  { id: 0302, nombre: "Omot", tipo: "Bicho" },
-  { id: 0303, nombre: "Pinsir", tipo: "Bicho" },
+  // 🐛 Bicho
+  { id: 416 }, // Vespiquen
+  { id: 49 },  // Venomoth
+  { id: 127 }, // Pinsir
 
-  // 🐉 Dragón (0400)
-  { id: 0401, nombre: "Drapfel", tipo: "Dragón" },
-  { id: 0402, nombre: "Miraidon", tipo: "Dragón" },
-  { id: 0403, nombre: "Nigiragi", tipo: "Dragón" },
+  // 🐉 Dragón
+  { id: 841 },  // Flapple
+  { id: 1008 }, // Miraidon
+  { id: 978 },  // Tatsugiri
 
-  // ⚡ Eléctrico (0500)
-  { id: 0501, nombre: "Ferropuas", tipo: "Eléctrico" },
-  { id: 0502, nombre: "Pikachu", tipo: "Eléctrico" },
-  { id: 0503, nombre: "Zeraora", tipo: "Eléctrico" },
+  // ⚡ Eléctrico
+  { id: 995 }, // Iron Thorns / Ferropúas
+  { id: 25 },  // Pikachu
+  { id: 807 }, // Zeraora
 
-  // 👻 Fantasma (0600)
-  { id: 0601, nombre: "Gengar", tipo: "Fantasma" },
-  { id: 0602, nombre: "Iskalar", tipo: "Fantasma" },
-  { id: 0603, nombre: "Kleoparda", tipo: "Fantasma" },
+  // 👻 Fantasma
+  { id: 94 },  // Gengar
+  { id: 686 }, // Inkay
+  { id: 510 }, // Liepard
 
-  // 🔥 Fuego (0700)
-  { id: 0701, nombre: "Charmander", tipo: "Fuego" },
-  { id: 0702, nombre: "Flareon", tipo: "Fuego" },
-  { id: 0703, nombre: "Ponyta", tipo: "Fuego" },
+  // 🔥 Fuego
+  { id: 4 },   // Charmander
+  { id: 136 }, // Flareon
+  { id: 77 },  // Ponyta
 
-  // ❄️ Hada (0800)
-  { id: 0801, nombre: "Gardevoir", tipo: "Hada" },
-  { id: 0802, nombre: "Flauschling", tipo: "Hada" },
-  { id: 0803, nombre: "Hefel", tipo: "Hada" },
+  // 🌸 Hada
+  { id: 282 }, // Gardevoir
+  { id: 684 }, // Swirlix
+  { id: 926 }, // Fidough
 
-  // ❄️ Hielo (0900)
-  { id: 0901, nombre: "Glaceon", tipo: "Hielo" },
-  { id: 0902, nombre: "Gelatini", tipo: "Hielo" },
-  { id: 0903, nombre: "Seemops", tipo: "Hielo" },
+  // ❄️ Hielo
+  { id: 471 }, // Glaceon
+  { id: 582 }, // Vanillite
+  { id: 363 }, // Spheal
 
-  // 🧍 Normal (1000)
-  { id: 1001, nombre: "Boreos", tipo: "Normal" },
-  { id: 1002, nombre: "Eevee", tipo: "Normal" },
-  { id: 1003, nombre: "Mopex", tipo: "Normal" },
+  // 🧍 Normal
+  { id: 641, form: "Incarnate Forme" }, // Tornadus
+  { id: 133 }, // Eevee
+  { id: 967 }, // Cyclizar
 
-  // 🌿 Planta (1100)
-  { id: 1101, nombre: "Bulbasaur", tipo: "Planta" },
-  { id: 1102, nombre: "Igamaro", tipo: "Planta" },
-  { id: 1103, nombre: "Torterra", tipo: "Planta" },
+  // 🌿 Planta
+  { id: 1 },   // Bulbasaur
+  { id: 650 }, // Chespin
+  { id: 389 }, // Torterra
 
-  // 🧠 Psíquico (1200)
-  { id: 1201, nombre: "Alakazam", tipo: "Psíquico" },
-  { id: 1202, nombre: "Hypno", tipo: "Psíquico" },
-  { id: 1203, nombre: "Mewtwo", tipo: "Psíquico" },
+  // 🧠 Psíquico
+  { id: 65 },  // Alakazam
+  { id: 97 },  // Hypno
+  { id: 150 }, // Mewtwo
 
-  // 🪨 Roca (1300)
-  // (sin Pokémon identificados)
+  // 🪨 Roca
+  { id: 95 }, // Onix
 
-  // 🌙 Siniestro (1400)
-  { id: 1401, nombre: "Mightyena", tipo: "Siniestro" },
-  { id: 1402, nombre: "Zoroark", tipo: "Siniestro" },
+  // 🌙 Siniestro
+  { id: 262 }, // Mightyena
+  { id: 571 }, // Zoroark
 
-  // 🟫 Suelo (1500)
-  { id: 1501, nombre: "Hippowdon", tipo: "Suelo" },
-  { id: 1502, nombre: "Phanpy", tipo: "Suelo" },
+  // 🟫 Suelo
+  { id: 450 }, // Hippowdon
+  { id: 231 }, // Phanpy
 
-  // ☠️ Veneno (1600)
-  { id: 1601, nombre: "Arbok", tipo: "Veneno" },
-  { id: 1602, nombre: "Drapion", tipo: "Veneno" },
-  { id: 1603, nombre: "Seviper", tipo: "Veneno" },
+  // ☠️ Veneno
+  { id: 24 },  // Arbok
+  { id: 452 }, // Drapion
+  { id: 336 }, // Seviper
 
-  // 🌪️ Volador (1700)
-  { id: 1701, nombre: "Togekiss", tipo: "Volador" },
-  { id: 1702, nombre: "Yanmega", tipo: "Volador" }
+  // 🌪️ Volador
+  { id: 468 }, // Togekiss
+  { id: 469 }  // Yanmega
 ];

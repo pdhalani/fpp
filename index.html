@@ -13,11 +13,13 @@
 
   <!-- Datos editables -->
   <script src="data/field.js"></script>
+  <script src="data/lista-de-pokemons.js"></script>
   <script src="data/pokemons.js"></script>
   <script src="data/equipaciones.js"></script>
 
   <!-- Configuración global -->
   <script src="js/config.js"></script>
+  <script src="js/utils/PokemonCatalog.js"></script>
 
   <!-- Phaser -->
   <script src="lib/phaser.min.js"></script>
@@ -33,6 +35,7 @@
   <script src="js/scenes/SelectScene.js"></script>
   <script src="js/scenes/GameScene.js"></script>
   <script src="js/scenes/PenaltyScene.js"></script>
+  <script src="js/scenes/MemoryScene.js"></script>
   <script src="js/scenes/SummaryScene.js"></script>
 
   <!-- Arranque -->
@@ -42,7 +45,7 @@
       width:  FIELD_CONFIG.largo * FIELD_CONFIG.escala,
       height: FIELD_CONFIG.ancho * FIELD_CONFIG.escala,
       backgroundColor: '#111111',
-      scene: [BootScene, MenuScene, SelectScene, GameScene, PenaltyScene, SummaryScene]
+      scene: [BootScene, MenuScene, SelectScene, GameScene, PenaltyScene, MemoryScene,SummaryScene]
     });
   </script>
 

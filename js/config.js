@@ -49,3 +49,11 @@ const GameState = {
   equipoVisitante: { pokemons: [], equipacion: null, goleadores: [] },
   marcador: { local: 0, visitante: 0 }
 };
+// Numeros magicos de UI
+const UI = {
+    iconoSeleccion: 9,
+    iconoJugador: 2.4,
+    escalaCampo: 12,
+    fuenteMenu: 11,
+    fuenteTitulo: 16
+};

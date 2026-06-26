@@ -1,6 +1,21 @@
 class BootScene extends Phaser.Scene {
   constructor() { super({ key: 'BootScene' }); }
 
+ preload() {
+  const pokemons = PokemonCatalog.seleccionables();
+
+  pokemons.forEach(pokemon => {
+    this.load.image(
+      PokemonCatalog.assetKey(pokemon),
+      pokemon.imagen
+    );
+  });
+
+  this.load.on('loaderror', file => {
+    alert('No se pudo cargar: ' + file.src);
+  });
+}
+
   create() {
     const W = FIELD_CONFIG.largo * FIELD_CONFIG.escala;
     const H = FIELD_CONFIG.ancho * FIELD_CONFIG.escala;
@@ -23,7 +38,13 @@ class BootScene extends Phaser.Scene {
       fontSize: '14px', fill: '#ffffff'
     }).setOrigin(0.5);
 
-    this.tweens.add({ targets: prompt, alpha: 0, duration: 600, yoyo: true, repeat: -1 });
+    this.tweens.add({
+      targets: prompt,
+      alpha: 0,
+      duration: 600,
+      yoyo: true,
+      repeat: -1
+    });
 
     this.input.keyboard.once('keydown', () => this.scene.start('MenuScene'));
   }
