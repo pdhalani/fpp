@@ -14,8 +14,10 @@ class Player {
     this._dx        = 0;
     this._dy        = 0;
     this._cooldownBalon = 0;
+    this.rol = null;
+    this.posicionBase = { x, y };
 
-    const ICONO_JUGADOR = 2.4;
+    const ICONO_JUGADOR = UI.escalaIconoPartido;
 
     const S = FIELD_CONFIG.escala;
     this.radioPixels = CONFIG.jugadorRadio * S;
@@ -51,25 +53,26 @@ class Player {
 
   _dibujar() {
     const g = this.graphics;
+    const y = this.y + (this.scene._campoY || 0);
     g.clear();
 
     g.fillStyle(
       Phaser.Display.Color.HexStringToColor(this.equipacion.color_jugadores).color
     );
-    g.fillCircle(this.x, this.y, this.radioPixels);
+    g.fillCircle(this.x, y, this.radioPixels);
 
     g.lineStyle(
       this.esActivo ? 3 : 1,
       this.esActivo ? 0xffffff : 0x000000,
       this.esActivo ? 1 : 0.5
     );
-    g.strokeCircle(this.x, this.y, this.radioPixels);
+    g.strokeCircle(this.x, y, this.radioPixels);
 
     if (this.icon) {
-      this.icon.setPosition(this.x, this.y);
+      this.icon.setPosition(this.x, y);
     }
 
-    this.label.setPosition(this.x, this.y + this.radioPixels + 7);
+    this.label.setPosition(this.x, y + this.radioPixels + 7);
   }
 
   mover(dx, dy) {
@@ -193,24 +196,45 @@ class Player {
     return true;
   }
 
-  updateCPU(ball, mitadX) {
-    if (!this.esCPU) return;
+  establecerPosicionBase(x, y) {
+    this.posicionBase.x = x;
+    this.posicionBase.y = y;
+  }
 
-    const enMiMitad = this.equipo === 'local'
-      ? ball.x <= mitadX
-      : ball.x >= mitadX;
+  colocar(x, y) {
+    this.x = x;
+    this.y = y;
+    this._dx = 0;
+    this._dy = 0;
+    this.tieneBalon = false;
+    this._cooldownBalon = 0;
+    this._dibujar();
+  }
 
-    if (enMiMitad) {
-      const dx = ball.x - this.x;
-      const dy = ball.y - this.y;
+  updateCPU(ball, opciones) {
+    const S = FIELD_CONFIG.escala;
+    const direccionAtaque = opciones.direccionAtaque;
+    let destinoX = this.posicionBase.x;
+    let destinoY = this.posicionBase.y;
 
-      this._dx = dx;
-      this._dy = dy;
-
-      this.mover(dx, dy);
+    if (ball.portador === this) {
+      destinoX = this.equipo === 'local'
+        ? FIELD_CONFIG.largo * S - this.radioPixels
+        : this.radioPixels;
+      destinoY = Phaser.Math.Clamp(ball.y, this.radioPixels, FIELD_CONFIG.ancho * S - this.radioPixels);
+    } else if (opciones.esPerseguidor) {
+      destinoX = ball.x;
+      destinoY = ball.y;
     } else {
-      this.estado = 'idle';
+      const avance = opciones.enAtaque ? 5 * S : 0;
+      destinoX += direccionAtaque * avance;
+      destinoY += Phaser.Math.Clamp((ball.y - destinoY) * 0.2, -3 * S, 3 * S);
     }
+
+    const dx = destinoX - this.x;
+    const dy = destinoY - this.y;
+    if (Math.hypot(dx, dy) > 2) this.mover(dx, dy);
+    else this.estado = 'idle';
   }
 
   update() {

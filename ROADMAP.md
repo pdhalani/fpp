@@ -10,7 +10,8 @@
 - [ ] Equipos predeterminados por tipo u otro criterio
 
 ## IA
-- [ ] Evolucionar de IA zombie (hacia el balón) a IA con roles por posición (delanteros atacan, defensas retroceden)
+- [x] Sustituir la persecución colectiva por una IA base con posiciones, apoyos ofensivos y un perseguidor por equipo
+- [ ] Evolucionar la IA con decisiones de pase, tiro y coberturas por rol
 
 ## Modo penalties
 - [ ] Añadir barra de potencia + dirección (fase C) sobre la mira libre actual (fase B)

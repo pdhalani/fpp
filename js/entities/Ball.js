@@ -17,11 +17,12 @@ class Ball {
   }
 
   _dibujar() {
+    const y = this.y + (this.scene._campoY || 0);
     this.graphics.clear();
     this.graphics.fillStyle(0xffffff);
-    this.graphics.fillCircle(this.x, this.y, 6);
+    this.graphics.fillCircle(this.x, y, 6);
     this.graphics.lineStyle(1, 0x888888);
-    this.graphics.strokeCircle(this.x, this.y, 6);
+    this.graphics.strokeCircle(this.x, y, 6);
   }
 
   colocar(x, y) {

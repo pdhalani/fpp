@@ -2,20 +2,20 @@
 const CONFIG = {
   controles: {
     p1: {
-      arriba:  "W",
-      abajo:   "S",
-      izq:     "A",
-      der:     "D",
-      accion1: "F",
-      accion2: "G"
-    },
-    p2: {
       arriba:  "UP",
       abajo:   "DOWN",
       izq:     "LEFT",
       der:     "RIGHT",
       accion1: "L",
       accion2: "K"
+    },
+    p2: {
+      arriba:  "W",
+      abajo:   "S",
+      izq:     "A",
+      der:     "D",
+      accion1: "F",
+      accion2: "G"
     },
     pausa: "ESC"
   },
@@ -55,5 +55,7 @@ const UI = {
     iconoJugador: 2.4,
     escalaCampo: 12,
     fuenteMenu: 11,
-    fuenteTitulo: 16
+    fuenteTitulo: 16,
+    altoHudPartido: 62,
+    escalaIconoPartido: 3.4
 };

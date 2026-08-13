@@ -7,18 +7,42 @@ Juego de fútbol 2D para navegador local. 1 o 2 jugadores con teclado. Vista cen
 - Sin servidor, sin instalación
 
 ## Cómo jugar
-Abre `index.html` directamente en el navegador.
+Abre `index.html` directamente en el navegador. No necesita servidor, instalación ni build.
 
 ## Controles
 | Acción | Jugador 1 | Jugador 2 |
 |---|---|---|
-| Mover | WASD | Flechas |
-| Chute / potencia | F | L |
-| Pase / cambio jugador | G | K |
+| Mover | Flechas | WASD |
+| Chute / potencia | L | F |
+| Pase / cambio jugador | K | G |
 | Pausa | Escape / P | Escape / P |
 
+## Flujo de selección
+
+Tras elegir Partido normal o Penalties, la selección de equipos se hace en una sola pantalla.
+
+- Elige `MANUAL` o `RANDOM`.
+- `RANDOM` completa ambos equipos y sus equipaciones, pero se queda en pantalla hasta confirmar `JUGAR`.
+- En `MANUAL`, elige Local o Visitante con izquierda/derecha, confirma la equipación y selecciona seis Pokémon.
+- Al confirmar un equipo se pasa al otro; cuando ambos están completos, confirma `JUGAR` con Espacio o Enter.
+- `Escape` vuelve un nivel; desde el primer nivel regresa al menú principal.
+- En la lista de Pokémon, mantén arriba/abajo para desplazarte rápidamente. El catálogo está ordenado por tipo y nombre.
+- El campo virtual central muestra las dos formaciones separadas; los iconos están centrados en el círculo de su equipación.
+
+## Pantalla de partido
+
+- El marcador, el reloj, los avisos y el jugador activo se muestran en una franja superior independiente, sin cubrir el terreno de juego.
+- Los iconos de los jugadores se muestran ampliados para facilitar la lectura durante el partido.
+- Al empezar la segunda parte, ambos equipos —incluidos los porteros— cambian automáticamente de lado.
+
+## Menú principal
+
+- Partido normal: Tipo → Modo (1 o 2 jugadores) → Duración.
+- Penalties: sin opciones adicionales por ahora.
+- Bonus: Memory: solo 1 jugador y selección del número de cartas.
+
 ## Personalización
-Edita los ficheros en `data/` para modificar Pokémons, equipaciones y dimensiones del campo.
+Edita los ficheros en `data/` para modificar el catálogo fijo de Pokémons, equipaciones y dimensiones del campo. La alineación de cada partido solo existe durante esa ejecución.
 
 ## Tecnología
 Phaser 3 · JavaScript · `file://`

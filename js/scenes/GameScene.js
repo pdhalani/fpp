@@ -6,6 +6,7 @@ class GameScene extends Phaser.Scene {
     this._S  = S;
     this._W  = FIELD_CONFIG.largo * S;
     this._H  = FIELD_CONFIG.ancho * S;
+    this._campoY = UI.altoHudPartido;
 
     this._parte       = 1;
     this._tiempoMs    = GameState.duracionParte * 60 * 1000;
@@ -19,15 +20,15 @@ class GameScene extends Phaser.Scene {
 
     this._dibujarCampo();
     this._crearEquipos();
-    this._crearHUD();
-    this._crearPausa();
+    this._hud = new MatchHud(this, this._W, UI.altoHudPartido);
+    this._menuPausa = new MatchPauseMenu(this, this._W, this._H + UI.altoHudPartido);
     this._crearTeclado();
     this._iniciarParte(true);
   }
 
   _dibujarCampo() {
     const S = this._S, W = this._W, H = this._H;
-    const g = this.add.graphics();
+    const g = this.add.graphics().setPosition(0, this._campoY);
 
     g.fillStyle(0x2d7a2d); g.fillRect(0, 0, W, H);
     g.lineStyle(2, 0xffffff, 1);
@@ -142,6 +143,7 @@ this._porteroVisitante = new Goalkeeper(
       );
 
       j.equipo = 'local';
+      j.rol = GameState.equipoLocal.roles[i + 1];
       this._jugadoresLocal.push(j);
     }
 
@@ -160,6 +162,7 @@ this._porteroVisitante = new Goalkeeper(
       );
 
       j.equipo = 'visitante';
+      j.rol = GameState.equipoVisitante.roles[i + 1];
       this._jugadoresVisitante.push(j);
     }
 
@@ -172,52 +175,12 @@ this._porteroVisitante = new Goalkeeper(
     this._ball.colocar(this._W / 2, this._H / 2);
   }
 
-  _crearHUD() {
-    const W = this._W;
-
-    this._hudMarcador = this.add.text(W/2, 8, '0 — 0', {
-      fontSize: '18px', fill: '#ffffff', fontStyle: 'bold'
-    }).setOrigin(0.5, 0).setDepth(20);
-
-    this._hudTiempo = this.add.text(W/2, 28, '', {
-      fontSize: '13px', fill: '#cccccc'
-    }).setOrigin(0.5, 0).setDepth(20);
-
-    this._hudActivo = this.add.text(8, 8, '', {
-      fontSize: '11px', fill: '#ffcc00'
-    }).setDepth(20);
-
-    this._txtCentro = this.add.text(W/2, this._H/2, '', {
-      fontSize: '32px', fill: '#ffffff', fontStyle: 'bold'
-    }).setOrigin(0.5).setAlpha(0).setDepth(20);
-  }
-
   _mostrarMensajeCentro(texto) {
-    this.tweens.killTweensOf(this._txtCentro);
-    this._txtCentro.setText(texto).setAlpha(1);
+    this._hud.mostrarMensaje(texto);
   }
 
   _ocultarMensajeCentro(duracion) {
-    this.time.delayedCall(duracion, () => {
-      this.tweens.add({ targets: this._txtCentro, alpha: 0, duration: 300 });
-    });
-  }
-
-  _crearPausa() {
-    const W = this._W, H = this._H;
-
-    this._panelPausa = this.add.container(W/2, H/2).setVisible(false).setDepth(30);
-    const bg = this.add.rectangle(0, 0, 260, 120, 0x000000, 0.85);
-    const txt = this.add.text(0, -35, 'PAUSA', { fontSize: '22px', fill: '#ffcc00' }).setOrigin(0.5);
-    this._btnContinuar = this.add.text(0, 5, '[ Continuar ]', { fontSize: '16px', fill: '#00ff00' }).setOrigin(0.5);
-    this._btnAbandonar = this.add.text(0, 35, '[ Abandonar ]', { fontSize: '16px', fill: '#ff4444' }).setOrigin(0.5);
-
-    this._panelPausa.add([bg, txt, this._btnContinuar, this._btnAbandonar]);
-    this._focoPausa = 0;
-
-    this._pausaArriba = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
-    this._pausaAbajo  = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
-    this._pausaEnter  = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    this._hud.ocultarMensaje(duracion);
   }
 
   _crearTeclado() {
@@ -245,17 +208,7 @@ this._porteroVisitante = new Goalkeeper(
     const posL = this._posicionesIniciales(invertir ? 'visitante' : 'local');
     const posV = this._posicionesIniciales(invertir ? 'local' : 'visitante');
 
-    this._porteroLocal.x = posL[0].x;
-    this._porteroLocal.y = posL[0].y;
-    this._porteroVisitante.x = posV[0].x;
-    this._porteroVisitante.y = posV[0].y;
-
-    for (let i = 0; i < 5; i++) {
-      this._jugadoresLocal[i].x = posL[i+1].x;
-      this._jugadoresLocal[i].y = posL[i+1].y;
-      this._jugadoresVisitante[i].x = posV[i+1].x;
-      this._jugadoresVisitante[i].y = posV[i+1].y;
-    }
+    this._colocarEquipos(posL, posV);
 
     this._ball.colocar(this._W / 2, this._H / 2);
     this._tiempoMs = GameState.duracionParte * 60 * 1000;
@@ -347,16 +300,40 @@ this._porteroVisitante = new Goalkeeper(
     }
   }
 
+  _colocarEquipos(posL, posV) {
+    this._porteroLocal.colocar(posL[0].x, posL[0].y);
+    this._porteroVisitante.colocar(posV[0].x, posV[0].y);
+
+    for (let i = 0; i < 5; i++) {
+      this._jugadoresLocal[i].colocar(posL[i + 1].x, posL[i + 1].y);
+      this._jugadoresLocal[i].establecerPosicionBase(posL[i + 1].x, posL[i + 1].y);
+      this._jugadoresVisitante[i].colocar(posV[i + 1].x, posV[i + 1].y);
+      this._jugadoresVisitante[i].establecerPosicionBase(posV[i + 1].x, posV[i + 1].y);
+    }
+  }
+
+  _actualizarIAEquipo(equipo, jugadores, jugadorControlado) {
+    const controladosPorPersona = jugadores.filter(j => j !== jugadorControlado);
+    const perseguidores = controladosPorPersona.length > 0 ? controladosPorPersona : jugadores;
+    const perseguidor = perseguidores.reduce((mejor, jugador) =>
+      Phaser.Math.Distance.Between(jugador.x, jugador.y, this._ball.x, this._ball.y) <
+      Phaser.Math.Distance.Between(mejor.x, mejor.y, this._ball.x, this._ball.y) ? jugador : mejor
+    );
+    const enAtaque = this._ball.portador && this._ball.portador.equipo === equipo;
+
+    for (const jugador of controladosPorPersona) {
+      jugador.updateCPU(this._ball, {
+        esPerseguidor: jugador === perseguidor && !enAtaque,
+        enAtaque,
+        direccionAtaque: equipo === 'local' ? 1 : -1
+      });
+    }
+  }
+
   _actualizarIA() {
-    const mitadX = this._W / 2;
-
-    for (const j of this._jugadoresLocal) {
-      if (j.esCPU) j.updateCPU(this._ball, mitadX);
-    }
-
-    for (const j of this._jugadoresVisitante) {
-      if (j.esCPU) j.updateCPU(this._ball, mitadX);
-    }
+    this._actualizarIAEquipo('local', this._jugadoresLocal, this._activoLocal);
+    this._actualizarIAEquipo('visitante', this._jugadoresVisitante,
+      GameState.modo === '2p' ? this._activoVisitante : null);
 
     this._porteroLocal.updateCPU(this._ball);
     this._porteroVisitante.updateCPU(this._ball);
@@ -367,20 +344,11 @@ this._porteroVisitante = new Goalkeeper(
       this._tiempoMs = Math.max(0, this._tiempoMs - delta);
     }
 
-    const segs = Math.ceil(this._tiempoMs / 1000);
-    const mm = Math.floor(segs / 60);
-    const ss = segs % 60;
-    const m = GameState.marcador;
-    const eqL = GameState.equipoLocal.equipacion;
-    const eqV = GameState.equipoVisitante.equipacion;
-    const nombreL = eqL ? eqL.icono + ' ' + eqL.nombre : 'Local';
-    const nombreV = eqV ? eqV.icono + ' ' + eqV.nombre : 'Visitante';
-
-    this._hudMarcador.setText(nombreL + '  ' + m.local + ' — ' + m.visitante + '  ' + nombreV);
-    this._hudTiempo.setText('Parte ' + this._parte + '  |  ' + mm + ':' + String(ss).padStart(2, '0'));
-
-    const activoNombre = this._activoLocal.pokemon ? this._activoLocal.pokemon.nombre : '?';
-    this._hudActivo.setText('▶ ' + activoNombre);
+    this._hud.actualizar({
+      parte: this._parte, tiempoMs: this._tiempoMs, marcador: GameState.marcador,
+      equipoLocal: GameState.equipoLocal, equipoVisitante: GameState.equipoVisitante,
+      jugadorActivo: this._activoLocal
+    });
   }
 
   _procesarGol(resultado) {
@@ -415,17 +383,7 @@ this._porteroVisitante = new Goalkeeper(
     const posL = this._posicionesIniciales(invertir ? 'visitante' : 'local');
     const posV = this._posicionesIniciales(invertir ? 'local' : 'visitante');
 
-    this._porteroLocal.x = posL[0].x;
-    this._porteroLocal.y = posL[0].y;
-    this._porteroVisitante.x = posV[0].x;
-    this._porteroVisitante.y = posV[0].y;
-
-    for (let i = 0; i < 5; i++) {
-      this._jugadoresLocal[i].x = posL[i+1].x;
-      this._jugadoresLocal[i].y = posL[i+1].y;
-      this._jugadoresVisitante[i].x = posV[i+1].x;
-      this._jugadoresVisitante[i].y = posV[i+1].y;
-    }
+    this._colocarEquipos(posL, posV);
 
     this._ball.colocar(this._W / 2, this._H / 2);
 
@@ -451,10 +409,7 @@ this._porteroVisitante = new Goalkeeper(
 
   _abrirPausa() {
     this._pausado = true;
-    this._panelPausa.setVisible(true);
-    this._focoPausa = 0;
-    this._btnContinuar.setColor('#ffcc00');
-    this._btnAbandonar.setColor('#ff4444');
+    this._menuPausa.abrir();
   }
 
   _terminarPartido() {
@@ -463,32 +418,15 @@ this._porteroVisitante = new Goalkeeper(
 
   update(time, delta) {
     if (Phaser.Input.Keyboard.JustDown(this._pausaKey) || Phaser.Input.Keyboard.JustDown(this._pausaKeyP)) {
-      if (!this._contando && !this._panelPausa.visible) {
+      if (!this._contando && !this._menuPausa.panel.visible) {
         this._abrirPausa();
       }
     }
 
-    if (this._panelPausa.visible) {
-      if (Phaser.Input.Keyboard.JustDown(this._pausaAbajo)) {
-        this._focoPausa = 1;
-        this._btnContinuar.setColor('#ff4444');
-        this._btnAbandonar.setColor('#ffcc00');
-      }
-
-      if (Phaser.Input.Keyboard.JustDown(this._pausaArriba)) {
-        this._focoPausa = 0;
-        this._btnContinuar.setColor('#ffcc00');
-        this._btnAbandonar.setColor('#ff4444');
-      }
-
-      if (Phaser.Input.Keyboard.JustDown(this._pausaEnter)) {
-        if (this._focoPausa === 0) {
-          this._pausado = false;
-          this._panelPausa.setVisible(false);
-        } else {
-          this._terminarPartido();
-        }
-      }
+    if (this._menuPausa.panel.visible) {
+      const accion = this._menuPausa.procesarInput();
+      if (accion === 'continuar') this._pausado = false;
+      if (accion === 'abandonar') this._terminarPartido();
 
       return;
     }

@@ -21,23 +21,24 @@ class Goalkeeper extends Player {
 
   _dibujar() {
     const g = this.graphics;
+    const y = this.y + (this.scene._campoY || 0);
     g.clear();
 
     g.fillStyle(this._colorPortero || 0x888888);
-    g.fillCircle(this.x, this.y, this.radioPixels);
+    g.fillCircle(this.x, y, this.radioPixels);
 
     g.lineStyle(
       this.esActivo ? 3 : 1,
       this.esActivo ? 0xffffff : 0x000000,
       this.esActivo ? 1 : 0.5
     );
-    g.strokeCircle(this.x, this.y, this.radioPixels);
+    g.strokeCircle(this.x, y, this.radioPixels);
 
     if (this.icon) {
-      this.icon.setPosition(this.x, this.y);
+      this.icon.setPosition(this.x, y);
     }
 
-    this.label.setPosition(this.x, this.y + this.radioPixels + 7);
+    this.label.setPosition(this.x, y + this.radioPixels + 7);
   }
 
   updateCPU(ball) {
