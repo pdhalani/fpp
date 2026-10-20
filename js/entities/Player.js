@@ -107,6 +107,24 @@ class Player {
     return dist <= this.radioPixels + ball.radio;
   }
 
+  estadistica(nombre) {
+    return this.pokemon && this.pokemon.stats ? (this.pokemon.stats[nombre] || 0) : 0;
+  }
+
+  intentarRobar(rival, ball) {
+    if (!rival || !rival.tieneBalon) return false;
+    const distancia = Phaser.Math.Distance.Between(this.x, this.y, rival.x, rival.y);
+    if (distancia > CONFIG.iaDistanciaRobo) return false;
+    if (this.estadistica('defense') < rival.estadistica('attack')) return false;
+
+    rival.tieneBalon = false;
+    this.tieneBalon = true;
+    ball.portador = this;
+    ball.vx = 0;
+    ball.vy = 0;
+    return true;
+  }
+
   tomarBalon(ball) {
     if (this._cooldownBalon > 0) return;
 
@@ -212,24 +230,16 @@ class Player {
   }
 
   updateCPU(ball, opciones) {
-    const S = FIELD_CONFIG.escala;
-    const direccionAtaque = opciones.direccionAtaque;
-    let destinoX = this.posicionBase.x;
-    let destinoY = this.posicionBase.y;
+    const destinoX = opciones.destino.x;
+    const destinoY = opciones.destino.y;
+    const rival = ball.portador && ball.portador.equipo !== this.equipo ? ball.portador : null;
 
-    if (ball.portador === this) {
-      destinoX = this.equipo === 'local'
-        ? FIELD_CONFIG.largo * S - this.radioPixels
-        : this.radioPixels;
-      destinoY = Phaser.Math.Clamp(ball.y, this.radioPixels, FIELD_CONFIG.ancho * S - this.radioPixels);
-    } else if (opciones.esPerseguidor) {
-      destinoX = ball.x;
-      destinoY = ball.y;
-    } else {
-      const avance = opciones.enAtaque ? 5 * S : 0;
-      destinoX += direccionAtaque * avance;
-      destinoY += Phaser.Math.Clamp((ball.y - destinoY) * 0.2, -3 * S, 3 * S);
+    if (!ball.portador && this.puedeControlarBalon(ball)) {
+      this.tomarBalon(ball);
+      return;
     }
+
+    if (opciones.intentaRobo && rival && this.intentarRobar(rival, ball)) return;
 
     const dx = destinoX - this.x;
     const dy = destinoY - this.y;

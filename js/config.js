@@ -38,7 +38,9 @@ const CONFIG = {
   // Portero
   porteroVelocidad: 2.5,
   porteroRetrasoMin: 300,
-  porteroRetrasoMax: 800
+  porteroRetrasoMax: 800,
+  iaDistanciaRobo: 12,
+  iaDistanciaPresionMC: 20
 };
 // Estado compartido entre escenas — se rellena durante los menús
 const GameState = {
@@ -57,5 +59,5 @@ const UI = {
     fuenteMenu: 11,
     fuenteTitulo: 16,
     altoHudPartido: 62,
-    escalaIconoPartido: 3.4
+    escalaIconoPartido: 6.8
 };

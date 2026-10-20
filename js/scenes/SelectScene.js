@@ -1,5 +1,5 @@
 const MAX_SELECCION = 6;
-const ROLES_EQUIPO = ['POR', 'DF', 'DF', 'MC', 'MC', 'DC'];
+const ROLES_EQUIPO = ['POR', 'DFI', 'DFD', 'MCI', 'MCD', 'DC'];
 
 class SelectScene extends Phaser.Scene {
   constructor() { super({ key: 'SelectScene' }); }

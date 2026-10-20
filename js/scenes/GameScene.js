@@ -41,12 +41,24 @@ class GameScene extends Phaser.Scene {
     const pGateH = FIELD_CONFIG.porteria.ancho * S;
     const pGateD = FIELD_CONFIG.porteria.alto  * S * 2;
     const pGateY = (H - pGateH) / 2;
-    g.fillStyle(0x555555, 0.6);
-    g.fillRect(-pGateD, pGateY, pGateD, pGateH);
-    g.fillRect(W, pGateY, pGateD, pGateH);
+    // Porterías visibles dentro del campo: red sombreada y postes blancos.
+    const redIzquierdaX = 2;
+    const redDerechaX = W - pGateD - 2;
+    g.fillStyle(0x173d51, 0.7);
+    g.fillRect(redIzquierdaX, pGateY, pGateD, pGateH);
+    g.fillRect(redDerechaX, pGateY, pGateD, pGateH);
+    g.lineStyle(1, 0x8bc7e8, 0.5);
+    for (let y = pGateY + 4; y < pGateY + pGateH; y += 5) {
+      g.lineBetween(redIzquierdaX, y, redIzquierdaX + pGateD, y);
+      g.lineBetween(redDerechaX, y, redDerechaX + pGateD, y);
+    }
     g.lineStyle(3, 0xffffff, 1);
-    g.strokeRect(-pGateD, pGateY, pGateD, pGateH);
-    g.strokeRect(W, pGateY, pGateD, pGateH);
+    g.lineBetween(2, pGateY, 2, pGateY + pGateH);
+    g.lineBetween(W - 2, pGateY, W - 2, pGateY + pGateH);
+    g.lineBetween(2, pGateY, redIzquierdaX + pGateD, pGateY);
+    g.lineBetween(2, pGateY + pGateH, redIzquierdaX + pGateD, pGateY + pGateH);
+    g.lineBetween(W - 2, pGateY, redDerechaX, pGateY);
+    g.lineBetween(W - 2, pGateY + pGateH, redDerechaX, pGateY + pGateH);
 
     const aL = FIELD_CONFIG.area.largo * S;
     const aW = FIELD_CONFIG.area.ancho * S;
@@ -301,6 +313,7 @@ this._porteroVisitante = new Goalkeeper(
   }
 
   _colocarEquipos(posL, posV) {
+    this._ball.portador = null;
     this._porteroLocal.colocar(posL[0].x, posL[0].y);
     this._porteroVisitante.colocar(posV[0].x, posV[0].y);
 
@@ -312,22 +325,92 @@ this._porteroVisitante = new Goalkeeper(
     }
   }
 
-  _actualizarIAEquipo(equipo, jugadores, jugadorControlado) {
-    const controladosPorPersona = jugadores.filter(j => j !== jugadorControlado);
-    const perseguidores = controladosPorPersona.length > 0 ? controladosPorPersona : jugadores;
-    const perseguidor = perseguidores.reduce((mejor, jugador) =>
-      Phaser.Math.Distance.Between(jugador.x, jugador.y, this._ball.x, this._ball.y) <
-      Phaser.Math.Distance.Between(mejor.x, mejor.y, this._ball.x, this._ball.y) ? jugador : mejor
-    );
-    const enAtaque = this._ball.portador && this._ball.portador.equipo === equipo;
+  _referenciaArea(equipo, lado) {
+    const S = this._S;
+    const xPorteria = equipo === 'local' ? 0 : this._W;
+    const xArea = equipo === 'local'
+      ? FIELD_CONFIG.area.largo * S
+      : this._W - FIELD_CONFIG.area.largo * S;
+    const yArea = lado === 'I'
+      ? (this._H - FIELD_CONFIG.area.ancho * S) / 2
+      : (this._H + FIELD_CONFIG.area.ancho * S) / 2;
+    const yPalo = lado === 'I'
+      ? (this._H - FIELD_CONFIG.porteria.ancho * S) / 2
+      : (this._H + FIELD_CONFIG.porteria.ancho * S) / 2;
+    return { porteria: { x: xPorteria, y: yPalo }, area: { x: xArea, y: yArea } };
+  }
 
-    for (const jugador of controladosPorPersona) {
-      jugador.updateCPU(this._ball, {
-        esPerseguidor: jugador === perseguidor && !enAtaque,
-        enAtaque,
-        direccionAtaque: equipo === 'local' ? 1 : -1
-      });
+  _puntoMedio(a, b) {
+    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+  }
+
+  _objetivoRol(jugador, equipo) {
+    const balon = { x: this._ball.x, y: this._ball.y };
+    const enAtaque = this._ball.portador && this._ball.portador.equipo === equipo;
+    const lado = jugador.rol.endsWith('I') ? 'I' : 'D';
+    const equipoReferencia = enAtaque ? (equipo === 'local' ? 'visitante' : 'local') : equipo;
+    const ref = this._referenciaArea(equipoReferencia, lado);
+    const rival = this._ball.portador && this._ball.portador.equipo !== equipo ? this._ball.portador : null;
+    const balonMasCercaDelArea = rival &&
+      Phaser.Math.Distance.Between(balon.x, balon.y, ref.area.x, ref.area.y) <
+      Phaser.Math.Distance.Between(jugador.x, jugador.y, ref.area.x, ref.area.y);
+
+    if (!this._ball.portador) {
+      return { destino: balon, intentaRobo: false };
     }
+    if (this._ball.portador === jugador) {
+      const metaX = equipo === 'local' ? this._W - jugador.radioPixels : jugador.radioPixels;
+      return { destino: { x: metaX, y: this._ball.y }, intentaRobo: false };
+    }
+    if (jugador.rol === 'DC') {
+      const enCampoContrario = equipo === 'local' ? this._ball.x > this._W / 2 : this._ball.x < this._W / 2;
+      if (!enAtaque && enCampoContrario) return { destino: balon, intentaRobo: true };
+      const centroPorteriaRival = { x: equipo === 'local' ? this._W : 0, y: this._H / 2 };
+      return { destino: this._puntoMedio(balon, centroPorteriaRival), intentaRobo: false };
+    }
+    if (jugador.rol.startsWith('DF')) {
+      return {
+        destino: balonMasCercaDelArea ? balon : this._puntoMedio(balon, ref.porteria),
+        intentaRobo: Boolean(balonMasCercaDelArea)
+      };
+    }
+    if (jugador.rol.startsWith('MC')) {
+      const distancia = Phaser.Math.Distance.Between(jugador.x, jugador.y, balon.x, balon.y);
+      const presiona = !enAtaque && distancia <= CONFIG.iaDistanciaPresionMC;
+      return {
+        destino: presiona ? balon : this._puntoMedio(balon, ref.area),
+        intentaRobo: presiona
+      };
+    }
+    return { destino: jugador.posicionBase, intentaRobo: false };
+  }
+
+  _separarObjetivos(jugadores, objetivos) {
+    const distanciaMinima = 2.5 * this._S;
+    jugadores.forEach((jugador, i) => {
+      jugadores.forEach((otro, j) => {
+        if (i >= j) return;
+        const objetivo = objetivos.get(jugador);
+        const otroObjetivo = objetivos.get(otro);
+        const dx = objetivo.x - otroObjetivo.x;
+        const dy = objetivo.y - otroObjetivo.y;
+        const distancia = Math.hypot(dx, dy);
+        if (distancia >= distanciaMinima) return;
+        const angulo = distancia > 0 ? Math.atan2(dy, dx) : (i % 2 ? Math.PI / 2 : 0);
+        const ajuste = (distanciaMinima - distancia) / 2;
+        objetivo.x += Math.cos(angulo) * ajuste;
+        objetivo.y += Math.sin(angulo) * ajuste;
+        otroObjetivo.x -= Math.cos(angulo) * ajuste;
+        otroObjetivo.y -= Math.sin(angulo) * ajuste;
+      });
+    });
+  }
+
+  _actualizarIAEquipo(equipo, jugadores, jugadorControlado) {
+    const cpu = jugadores.filter(jugador => jugador !== jugadorControlado);
+    const objetivos = new Map(cpu.map(jugador => [jugador, this._objetivoRol(jugador, equipo)]));
+    this._separarObjetivos(cpu, new Map(cpu.map(jugador => [jugador, objetivos.get(jugador).destino])));
+    cpu.forEach(jugador => jugador.updateCPU(this._ball, objetivos.get(jugador)));
   }
 
   _actualizarIA() {

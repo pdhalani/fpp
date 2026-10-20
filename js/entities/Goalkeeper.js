@@ -41,6 +41,16 @@ class Goalkeeper extends Player {
     this.label.setPosition(this.x, y + this.radioPixels + 7);
   }
 
+  colocar(x, y) {
+    super.colocar(x, y);
+    this._tienesBalonDesde = null;
+  }
+
+  estadistica(nombre) {
+    const valor = super.estadistica(nombre);
+    return nombre === 'defense' ? Math.round(valor * 1.5) : valor;
+  }
+
   updateCPU(ball) {
     const S       = FIELD_CONFIG.escala;
     const H       = FIELD_CONFIG.ancho * S;
@@ -121,17 +131,9 @@ class Goalkeeper extends Player {
       this.tieneBalon = true;
     }
 
-    if (ball.portador && ball.portador !== this) {
+    if (ball.portador && ball.portador !== this && balonEnArea) {
       const rival = ball.portador;
-      const distRival = Phaser.Math.Distance.Between(this.x, this.y, rival.x, rival.y);
-
-      if (distRival <= this.radioPixels + rival.radioPixels + 4) {
-        rival.tieneBalon = false;
-        ball.portador = null;
-        ball.vx = 0;
-        ball.vy = 0;
-        this._cooldownBalon = 0;
-      }
+      this.intentarRobar(rival, ball);
     }
 
     this._dibujar();

@@ -36,10 +36,14 @@ js/
 
 - Partido normal: dos partes, marcador, pausa, goles, porteros y selección de jugador.
   - El HUD vive en una franja superior independiente y no tapa el campo.
-  - Los iconos de Pokémon en partido usan una escala de lectura mayor, configurable desde `UI.escalaIconoPartido`.
+  - Los iconos de Pokémon en partido usan una escala de lectura mayor (actualmente duplicada), configurable desde `UI.escalaIconoPartido`.
   - En el descanso, todos los jugadores y porteros cambian de lado mediante recolocación atómica.
-- IA: formación base, apoyos ofensivos y un único perseguidor por equipo; aún faltan decisiones tácticas avanzadas.
+- IA: formación posicional 2-2-1 con robos básicos; aún faltan decisiones tácticas avanzadas.
+  - Los roles de campo usan posiciones dinámicas 2-2-1: DFI/DFD se referencian a los palos, MCI/MCD a los picos del área y DC a la portería rival.
+  - Balón suelto: los jugadores CPU intentan controlarlo. Robo: requiere proximidad (`CONFIG.iaDistanciaRobo`, actualmente 12 px) y Defensa mayor o igual que Ataque.
+  - El portero aplica un bonus del 50% a su Defensa y usa la misma regla de robo dentro de su área.
 - Selección: una escena con rosters Local/Visitante y campo virtual central.
+  - Roles de alineación: `POR`, `DFI`, `DFD`, `MCI`, `MCD` y `DC`.
   - `MANUAL`: equipo → equipación → seis Pokémon → confirmación.
   - `RANDOM`: genera ambos equipos, muestra el resultado y requiere confirmar `JUGAR`.
   - `ESC` retrocede un nivel.
